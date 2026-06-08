@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TDC Matchmaker — Create Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=600;700&family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-dark: #1a0533;
+      --purple-mid: #3b0764;
+      --purple: #7c3aed;
+      --pink: #ec4899;
+      --pink-light: #f9a8d4;
+      --bg: #f8f5ff;
+      --card: #ffffff;
+      --text: #1e1b2e;
+      --text-muted: #6b7280;
+      --border: #ede9fe;
+      --input-bg: #faf7ff;
+      --shadow-sm: 0 4px 6px rgba(124, 58, 237, 0.05);
+      --shadow-md: 0 10px 25px rgba(124, 58, 237, 0.08);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* --- HEADER --- */
+    .page-header {
+      background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid), #6b21a8);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: white;
+    }
+    .header-logo span { color: var(--pink-light); }
+    .header-back {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .header-back:hover { 
+      color: white; 
+      transform: translateX(-4px);
+    }
+
+    /* --- PROGRESS BAR --- */
+    .progress-wrap {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .step-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+    .step-active .step-circle {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+    }
+    .step-todo .step-circle { background: var(--border); color: var(--text-muted); }
+    .step-label { font-size: 0.85rem; font-weight: 600; }
+    .step-active .step-label { color: var(--purple); }
+    .step-todo .step-label { color: var(--text-muted); }
+    .step-connector {
+      width: 60px;
+      height: 2px;
+      background: var(--border);
+      margin: 0 16px;
+    }
+
+    /* --- FORM LAYOUT --- */
+    .form-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 24px 80px;
+    }
+
+    .section-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    .icon-pink { background: #fdf2f8; }
+    .icon-purple { background: #f5f3ff; }
+    .icon-blue { background: #eff6ff; }
+    .icon-green { background: #ecfdf5; }
+    .icon-orange { background: #fff7ed; }
+
+    .section-title-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .span-2 { grid-column: span 2; }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--input-bg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--purple);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+    }
+
+    textarea { height: 120px; resize: vertical; }
+
+    .input-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* --- PHOTO UPLOAD STYLING --- */
+    .photo-upload {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      background: var(--input-bg);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .photo-upload:hover { border-color: var(--pink); }
+    .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+    .upload-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+    .upload-sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+    .upload-btn-text {
+      display: inline-block;
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* --- SUBMIT AREA --- */
+    .submit-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+    .btn-secondary {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .required-note { font-size: 0.85rem; color: var(--text-muted); }
+    .required-note span { color: #ef4444; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="header-logo">TDC <span>Match</span></div>
+    <a href="dashboard.html" class="header-back">← Back to Dashboard</a>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-step step-active">
+      <div class="step-circle">1</div>
+      <div class="step-label">Basic Info</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step step-todo">
+      <div class="step-circle">2</div>
+      <div class="step-label">Family Details</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step step-todo">
+      <div class="step-circle">3</div>
+      <div class="step-label">Preferences</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step step-todo">
+      <div class="step-circle">4</div>
+      <div class="step-label">Review</div>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form id="profileForm" action="dashboard.html">
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-pink">📸</div>
+          <div>
+            <div class="section-title-text">Profile Photo</div>
+            <div class="section-desc">A clear photo increases match rate by 3×</div>
+          </div>
+        </div>
+        <div class="photo-upload">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-title">Upload a profile photo</div>
+          <div class="upload-sub">JPG, PNG or WEBP · Max 5MB · Square crop recommended</div>
+          <span class="upload-btn-text">Choose File</span>
+          <input type="file" accept="image/*" style="display:none"/>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-purple">✨</div>
+          <div>
+            <div class="section-title-text">Basic Information</div>
+            <div class="section-desc">Personal details used for matching</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name <span style="color:#ef4444">*</span></label>
+            <input type="text" id="fname" placeholder="Priya" required/>
+          </div>
+          <div class="form-group">
+            <label>Last Name <span style="color:#ef4444">*</span></label>
+            <input type="text" id="lname" placeholder="Mehta" required/>
+          </div>
+          <div class="form-group">
+            <label>Gender <span style="color:#ef4444">*</span></label>
+            <select id="gender" required>
+              <option value="">Select gender</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Non-binary">Non-binary</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date of Birth <span style="color:#ef4444">*</span></label>
+            <input type="date" id="dob" required/>
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="age" placeholder="25" min="18" required/>
+          </div>
+          <div class="form-group">
+            <label>Email Address <span style="color:#ef4444">*</span></label>
+            <input type="email" id="email" placeholder="priya@example.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" placeholder="+91 98765 43210"/>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Create a password"/>
+          </div>
+          <div class="form-group">
+            <label>Marital Status</label>
+            <select id="marital">
+              <option value="Single">Single</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Separated">Separated</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-blue">📍</div>
+          <div>
+            <div class="section-title-text">Location</div>
+            <div class="section-desc">Where you currently live</div>
+          </div>
+        </div>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label>Country</label>
+            <select id="country">
+              <option value="India">India</option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="UAE">UAE</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input type="text" placeholder="Maharashtra"/>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="city" placeholder="Pune"/>
+          </div>
+          <div class="form-group span-2">
+            <label>Open to Relocate?</label>
+            <select id="relocate">
+              <option value="Yes, anywhere">Yes, anywhere</option>
+              <option value="Yes, within India">Yes, within India</option>
+              <option value="Within my city only">Within my city only</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-pink">💖</div>
+          <div>
+            <div class="section-title-text">Personal Details</div>
+            <div class="section-desc">Physical and cultural attributes</div>
+          </div>
+        </div>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label>Height (cm)</label>
+            <input type="number" id="height" placeholder="163"/>
+          </div>
+          <div class="form-group">
+            <label>Weight (kg)</label>
+            <input type="number" id="weight" placeholder="58"/>
+          </div>
+          <div class="form-group">
+            <label>Complexion</label>
+            <select id="complexion">
+              <option value="Fair">Fair</option>
+              <option value="Wheatish">Wheatish</option>
+              <option value="Dusky">Dusky</option>
+              <option value="Dark">Dark</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Religion</label>
+            <select id="religion">
+              <option value="Hindu">Hindu</option>
+              <option value="Muslim">Muslim</option>
+              <option value="Christian">Christian</option>
+              <option value="Sikh">Sikh</option>
+              <option value="Jain">Jain</option>
+              <option value="Buddhist">Buddhist</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Caste / Community</label>
+            <input type="text" id="caste" placeholder="Brahmin, Patel, etc."/>
+          </div>
+          <div class="form-group">
+            <label>Mother Tongue</label>
+            <input type="text" placeholder="Marathi"/>
+          </div>
+          <div class="form-group span-2">
+            <label>Languages Known</label>
+            <input type="text" id="languages" placeholder="Hindi, English, Marathi"/>
+            <span class="input-hint">Separate with commas</span>
+          </div>
+          <div class="form-group">
+            <label>Diet</label>
+            <select>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Non-Vegetarian">Non-Vegetarian</option>
+              <option value="Eggetarian">Eggetarian</option>
+              <option value="Vegan">Vegan</option>
+              <option value="Jain">Jain</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-green">🎓</div>
+          <div>
+            <div class="section-title-text">Education & Career</div>
+            <div class="section-desc">Academic and professional background</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Highest Degree</label>
+            <select id="degree">
+              <option value="B.Tech / B.E.">B.Tech / B.E.</option>
+              <option value="B.Com">B.Com</option>
+              <option value="BBA">BBA</option>
+              <option value="MBBS / MD">MBBS / MD</option>
+              <option value="MBA">MBA</option>
+              <option value="CA / CS">CA / CS</option>
+              <option value="M.Tech">M.Tech</option>
+              <option value="PhD">PhD</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>College / University</label>
+            <input type="text" id="college" placeholder="IIT Pune"/>
+          </div>
+          <div class="form-group">
+            <label>Profession</label>
+            <select id="profession">
+              <option value="Software Engineer">Software Engineer</option>
+              <option value="Doctor">Doctor</option>
+              <option value="Lawyer">Lawyer</option>
+              <option value="CA / Finance">CA / Finance</option>
+              <option value="Business Owner">Business Owner</option>
+              <option value="Government Employee">Government Employee</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Employment Type</label>
+            <select>
+              <option value="Private Sector">Private Sector</option>
+              <option value="Government / PSU">Government / PSU</option>
+              <option value="Self Employed">Self Employed</option>
+              <option value="Business">Business</option>
+              <option value="Not Working">Not Working</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Current Company</label>
+            <input type="text" id="company" placeholder="Infosys"/>
+          </div>
+          <div class="form-group">
+            <label>Designation</label>
+            <input type="text" id="designation" placeholder="Senior Engineer"/>
+          </div>
+          <div class="form-group">
+            <label>Annual Income (LPA)</label>
+            <input type="number" id="income" placeholder="18"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-orange">🏡</div>
+          <div>
+            <div class="section-title-text">Family Details</div>
+            <div class="section-desc">Background and family values</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Family Type</label>
+            <select id="familyType">
+              <option value="Nuclear">Nuclear</option>
+              <option value="Joint">Joint</option>
+              <option value="Extended">Extended</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Family Values</label>
+            <select>
+              <option value="Traditional">Traditional</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Liberal">Liberal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Father's Occupation</label>
+            <input type="text" id="father" placeholder="Retired Engineer"/>
+          </div>
+          <div class="form-group">
+            <label>Mother's Occupation</label>
+            <input type="text" id="mother" placeholder="Homemaker"/>
+          </div>
+          <div class="form-group">
+            <label>Number of Siblings</label>
+            <input type="number" id="siblings" placeholder="1" min="0"/>
+          </div>
+          <div class="form-group">
+            <label>NRI Status</label>
+            <select>
+              <option value="Based in India">Based in India</option>
+              <option value="NRI">NRI</option>
+              <option value="NRI (open to return)">NRI (open to return)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon icon-purple">💞</div>
+          <div>
+            <div class="section-title-text">Match Preferences</div>
+            <div class="section-desc">Help us find the right person for you</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Want Kids?</label>
+            <select id="kids">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Maybe">Maybe</option>
+              <option value="Already have kids">Already have kids</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Open to Pets?</label>
+            <select id="pets">
+              <option value="Yes, love pets">Yes, love pets</option>
+              <option value="Yes, okay with it">Yes, okay with it</option>
+              <option value="No">No</option>
+              <option value="Allergic">Allergic</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preferred Match Location</label>
+            <input type="text" placeholder="Mumbai, Pune, Bangalore"/>
+          </div>
+          <div class="form-group">
+            <label>Preferred Age Range</label>
+            <input type="text" placeholder="28 – 36"/>
+          </div>
+          <div class="form-group span-2">
+            <label>About Yourself</label>
+            <textarea id="about" placeholder="Share a little about your personality, values, and what you're looking for in a partner…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-area">
+        <a href="dashboard.html" class="btn-secondary">← Back</a>
+        <p class="required-note"><span>*</span> Required fields</p>
+        <button type="submit" class="btn-primary">Save Profile & Continue →</button>
+      </div>
+
+    </form>
+  </div>
+  
+  <script src="profile.js"></script>
+</body>
+</html>

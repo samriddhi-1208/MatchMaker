@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Details</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; padding: 50px; }
+        .profile-container { max-width: 600px; background: white; margin: auto; padding: 40px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="profile-container" id="details">
+        <h1>Loading...</h1>
+    </div>
+
+    <script>
+        const p = JSON.parse(localStorage.getItem("activeProfile"));
+        if (p) {
+            document.getElementById('details').innerHTML = `
+                <h1 style="color:#0f172a; margin-top:0;">${p.name}</h1>
+                <p><strong>Profession:</strong> ${p.prof}</p>
+                <p><strong>Location:</strong> ${p.city}</p>
+                <p><strong>Compatibility:</strong> ${p.comp}%</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                <p><strong>Bio:</strong> ${p.bio}</p>
+                <a href="dashboard.html" style="color:#6366f1; text-decoration:none; font-weight:600;">← Back to Dashboard</a>
+            `;
+        }
+    </script>
+</body>
+</html>
